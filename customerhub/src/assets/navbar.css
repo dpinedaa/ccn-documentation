@@ -1,0 +1,74 @@
+
+.navbar {
+    max-width: 70%;
+    width: 70%; /* Keeps the content from getting too wide */
+    font-family: Arial, Helvetica, sans-serif; /* Makes the font consistent across all platforms */
+    justify-content: center; /* Centers the content horizontally */
+    text-align: center; 
+  }
+  
+  
+  /* Nav bar Style */
+  .navbar {
+  margin-left: 15%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background-color: black;
+  color: white;
+  height: 40px;
+  align-items: center;
+  /* margin-bottom: 10px; */
+  padding: 0%;
+  margin-top: 0%;
+  
+  z-index: 1000; /* Adjust z-index to make sure it appears above other content */
+  }
+  
+  
+  /*Nav bar button style*/
+  .nav-btn{
+  margin-right: 90px;
+  height: 100%;
+  width: 10%;
+  background-color: black;
+  color: white;
+  border: none;
+  font-size: 18px;
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+  /* margin: 5px; */
+  /* border: 1px solid darkgray; */
+  
+  }
+  
+  .nav-btn:hover{
+  background-color: #e6e6e6;
+  
+  color: black;
+  }
+  
+  
+  
+  .dropdown-section {
+  height: 70%;
+  width: 60px;
+  margin: 20px;
+  /* margin: 5px; */
+  background-color:  #e6e6e6;
+  border: 1px solid black;
+  font-size: 18px;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 5px;
+  }
+  
+  .dropdown-section:hover{
+  background-color: white;
+  color: black;
+  }
+  
+  
