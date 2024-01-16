@@ -1,0 +1,8 @@
+Host interface,VLAN,Bridge,Network,VM
+em1,457,Mgmtbr0,Management,All
+em3,442,Basebr0,Base 1,All
+em4,443,Basebr1,Base 2,All
+em3,440,EWbr0,East West 1,All
+em4,441,EWbr1,East West 2,All
+p1p1,"""474, 480, 482, 484, 486, """,NSbr0,North South 1,SSM
+p2p2,"""473, 475, 481, 483, 485""",NSbr1,North South 2,SSM
