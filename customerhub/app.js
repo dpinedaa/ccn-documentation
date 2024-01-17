@@ -10,12 +10,16 @@ const { Schema } = mongoose;
 
 // Define a schema for documents
 const documentSchema = new Schema({
+  _id: {type: String, alias: 'customer_document'},
   name: String,
   portVue: Number,
   portFlask: Number,
   portApache: Number,
   customerName: String
 });
+
+
+
 
 // Define a schema for customers
 const customerSchema = new Schema({
@@ -120,16 +124,23 @@ app.delete('/customers', async (req, res) => {
 // Add a document to a customer
 app.post('/add-document/:customerId', async (req, res) => {
     try {
+    
       const customerId = req.params.customerId;
       const { name } = req.body;
-  
+
+      //Find the customer by ID 
+      const foundCustomer = await Customer.findById(customerId);
+      const customerName = foundCustomer.name;
+
+      
       // Generate and assign ports based on specified ranges
       const portVue = await generateUniquePort(2003, 4000);
       const portFlask = await generateUniquePort(4003, 6000);
       const portApache = await generateUniquePort(6003, 8000);
-  
+      const customer_document = customerName + "-" + name;
       // Create a new document
       const document = new Document({
+        customer_document,
         name,
         portVue,
         portFlask,
@@ -143,7 +154,7 @@ app.post('/add-document/:customerId', async (req, res) => {
         return res.status(404).json({ error: 'Customer not found' });
       }
   
-      // Check for port duplications within the customer's documents
+      // Check for port duplications within all the existing documents
       const isPortDuplicated = customer.documents.some(doc => (
         doc.portVue === portVue || doc.portFlask === portFlask || doc.portApache === portApache
       ));
