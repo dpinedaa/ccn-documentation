@@ -198,9 +198,27 @@ app.post('/add-document/:customerId', async (req, res) => {
   
     return !!existingDocument;
   }
+
+  //Get a specific document
+app.get('/document/:documentId', async (req, res) => {
+    try {
+      const { documentId } = req.params;
   
+      // Find the document by ID
+      const document = await Document.findById(documentId);
+  
+      if (!document) {
+        return res.status(404).json({ error: 'Document not found' });
+      }
+  
+      res.status(200).json(document);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 
-
+  
 
   // Delete a document from a customer
 app.delete('/delete-document/:customerId/:documentId', async (req, res) => {
