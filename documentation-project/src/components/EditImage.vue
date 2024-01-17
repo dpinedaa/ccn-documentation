@@ -37,7 +37,7 @@ export default {
     saveImage() {
       const scrollPosition = window.scrollY;
       const fileName = this.filename;
-      const apiUrl = 'http://192.168.4.31:9876/update_file/' + this.sectionNumber + '/' + fileName;
+      const apiUrl = 'http://192.168.6.79:9876/update_file/' + this.sectionNumber + '/' + fileName;
 
       if (fileName.endsWith('.png') || fileName.endsWith('.jpeg')) {
         const file = this.$refs.file.files[0];

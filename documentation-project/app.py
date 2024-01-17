@@ -474,7 +474,7 @@ def add_csv(section_number):
 
 def create_rst_files():
     print("Creating RST files")
-    subprocess.run(["python", "scripts/createrst.py"])
+    subprocess.run(["python3", "scripts/createrst.py"])
 
 #Create Rst files method
 @app.route('/update', methods=['POST'])
@@ -487,7 +487,7 @@ def update():
 
     #Build the html files and show the output in the terminal
     
-    subprocess.run(["make.bat", "html"])
+    subprocess.run(["make", "html"])
 
     #change directory to the main folder
     os.chdir("..")

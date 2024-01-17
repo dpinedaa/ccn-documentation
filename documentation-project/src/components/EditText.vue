@@ -35,7 +35,7 @@
       saveFile() {
         const updatedContent = this.content;
         const apiUrl =
-          'http://192.168.4.31:9876/update_file/' +
+          'http://192.168.6.79:9876/update_file/' +
           this.sectionNumber +
           '/' +
           this.fileName;

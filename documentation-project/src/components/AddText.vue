@@ -127,7 +127,7 @@ export default{
                 return;
             }
             else{
-                const url = 'http://192.168.4.31:9876/save_text/' + this.sectionNumber;
+                const url = 'http://192.168.6.79:9876/save_text/' + this.sectionNumber;
                 
                 axios.post(url, { text: this.text, style: this.finalStyle })
                     .then(response => {

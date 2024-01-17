@@ -27,7 +27,7 @@
                                         
                                         <!-- <td v-if=!editDocumentCheck class="document-name">{{document.name}}</td>     -->
                                         <td v-if="!editDocumentCheck" class="document-name">
-                                            <a :href="'http://192.168.4.31:' + document.portVue">{{ document.name }}</a>
+                                            <a :href="'http://192.168.6.79:' + document.portVue">{{ document.name }}</a>
                                         </td>
 
 
