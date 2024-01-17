@@ -30,7 +30,7 @@ export default{
         },
         
         async updateSphinx() {
-            const url = 'http://192.168.6.79:9876/update'
+            const url = 'http://192.168.6.79:PORTFLASK/update'
             const response = await fetch(url, {
                 method: 'POST',
             });

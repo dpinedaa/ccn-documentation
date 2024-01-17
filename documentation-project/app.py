@@ -497,4 +497,4 @@ def update():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host=host_ip, port=9876)
+    app.run(debug=True, host=host_ip, port=PORTFLASK)

@@ -150,7 +150,7 @@ export default {
   },
   methods: {
     async getFiles() {
-      const url = `http://192.168.6.79:9876/files/${this.sectionNumber}`;
+      const url = `http://192.168.6.79:PORTFLASK/files/${this.sectionNumber}`;
       try {
         const response = await fetch(url, {
           method: 'GET',
@@ -249,7 +249,7 @@ export default {
       },
 
       getFilePath(fileName) {
-        return `http://192.168.6.79:9876/files/${this.sectionNumber}/${fileName}`;
+        return `http://192.168.6.79:PORTFLASK/files/${this.sectionNumber}/${fileName}`;
       },
 
       toggleEditMode(fileName) {
@@ -271,7 +271,7 @@ export default {
         }
       },
       deleteFile(fileName) {
-          const apiUrl = 'http://192.168.6.79:9876/delete_file/' + this.sectionNumber + '/' + fileName;
+          const apiUrl = 'http://192.168.6.79:PORTFLASK/delete_file/' + this.sectionNumber + '/' + fileName;
 
           const scrollPosition = window.scrollY;
           console.log(scrollPosition);
@@ -306,7 +306,7 @@ export default {
 
 
       moveFileUp(fileName) {
-        const url = 'http://192.168.6.79:9876/move_up/' + this.sectionNumber + '/' + fileName;
+        const url = 'http://192.168.6.79:PORTFLASK/move_up/' + this.sectionNumber + '/' + fileName;
         const scrollPosition = window.scrollY;
 
         fetch(url, {
@@ -338,7 +338,7 @@ export default {
       },
 
       moveFileDown(fileName) {
-        const url = 'http://192.168.6.79:9876/move_down/' + this.sectionNumber + '/' + fileName;
+        const url = 'http://192.168.6.79:PORTFLASK/move_down/' + this.sectionNumber + '/' + fileName;
         const scrollPosition = window.scrollY;
 
         fetch(url, {

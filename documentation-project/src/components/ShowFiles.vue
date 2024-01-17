@@ -215,7 +215,7 @@
     },
     methods: {
       async getFiles() {
-        const url = `http://192.168.6.79:9876/files/${this.sectionNumber}`;
+        const url = `http://192.168.6.79:PORTFLASK/files/${this.sectionNumber}`;
         try {
           const response = await fetch(url, {
             method: 'GET',
@@ -313,7 +313,7 @@
       saveTitle() {
         this.editTitleBoolean = false;
   
-        const url = 'http://192.168.6.79:9876/update_title/' + this.sectionNumber;
+        const url = 'http://192.168.6.79:PORTFLASK/update_title/' + this.sectionNumber;
         const newContent = this.sectionTitle;
   
         fetch(url, {
@@ -347,7 +347,7 @@
       async getSectionTitle() {
         try{
           
-          const url = 'http://192.168.6.79:9876/get_title/'+this.sectionNumber;
+          const url = 'http://192.168.6.79:PORTFLASK/get_title/'+this.sectionNumber;
   
         axios.get(url)
             .then(response => {
@@ -387,7 +387,7 @@
         },
   
         getFilePath(fileName) {
-          return `http://192.168.6.79:9876/files/${this.sectionNumber}/${fileName}`;
+          return `http://192.168.6.79:PORTFLASK/files/${this.sectionNumber}/${fileName}`;
         },
   
   
@@ -399,7 +399,7 @@
   
         saveFile(fileName) {
           const updatedContent = this.editedContents[fileName];
-          const apiUrl = 'http://192.168.6.79:9876/update_file/' + this.sectionNumber + '/' + fileName;  
+          const apiUrl = 'http://192.168.6.79:PORTFLASK/update_file/' + this.sectionNumber + '/' + fileName;  
           console.log(updatedContent);
   
   
@@ -487,7 +487,7 @@
   
   
         deleteFile(fileName) {
-          const apiUrl = 'http://192.168.6.79:9876/delete_file/' + this.sectionNumber + '/' + fileName;
+          const apiUrl = 'http://192.168.6.79:PORTFLASK/delete_file/' + this.sectionNumber + '/' + fileName;
   
   
           fetch(apiUrl, {

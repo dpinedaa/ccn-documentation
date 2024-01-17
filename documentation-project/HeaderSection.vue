@@ -1,8 +1,8 @@
 <template>
     <div class="layout">
       <div class="header">
-        <h1>LLD</h1>
-        <h2>Telem</h2>
+        <h1>DOCUMENTNAME</h1>
+        <h2>CUSTOMERNAME</h2>
       </div>
     </div>
   
