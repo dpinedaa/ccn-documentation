@@ -153,18 +153,44 @@ def create_apache_conf(full_name, portApache, username):
     print(output)
 
 
-# def create_start_script(full_name, portFlask, portVue):
-#     print("Creating start script " + full_name)
-#     file_path = '/scripts/start-' + full_name + '.sh'
 
-#     try:
-#         with open(file_path, 'w') as file:
-#             text_block = f"#!/bin/bash\n"
-#             text_block += f"cd /home/{username}/Documents/GitHub/ccn-documentation/documentation/{full_name}/\n"
-#             text_block += f"nohup python3 -m http.server {portVue} &\n"
-#             text_block += f"nohup python3 -m flask run --port={portFlask} &\n"
-#             file.write(text_block)
-#             print("Start script created successfully.")
+
+def create_start_script(full_name, portFlask, portVue):
+    print("Creating start script " + full_name)
+    
+    file_path = './scripts/' + full_name + '.sh'
+
+    try:
+        with open(file_path, 'w') as file:
+            text_block = f"#!/bin/bash \n\n"
+            text_block += f"pid=$(lsof -t -i:{portFlask})\n\n"
+            text_block += f"if [ -n \"$pid\" ]; then\n"
+            text_block += f"\tsudo kill -9 $pid\n"
+            text_block += f"fi\n\n"
+            text_block += f"pid=$(sudo lsof -t -i:{portVue})\n\n"
+            text_block += f"if [ -n \"$pid\" ]; then\n"
+            text_block += f"\tsudo kill -9 $pid\n"
+            text_block += f"fi\n\n"
+            text_block += f"#Start vue project \n"
+            text_block += f"cd ../documentation/{full_name}\n"
+            text_block += f"sudo PORT={portVue} npm run serve &\n\n"
+            text_block += f"#Start flask \n"
+            text_block += f"python3 app.py & \n"
+            file.write(text_block)
+            print("Start script created successfully.")
+    except Exception as e:
+        print(f"Error creating start script: {str(e)}")
+
+    # Make the script executable
+    command = f"sudo chmod +x {file_path}"
+    print(command)
+    output = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    print(output)
+
+    
+
+
+
 
 
 @app.route('/createdocumentation/<document_name>', methods=['POST'])
@@ -178,17 +204,93 @@ def create_documentation(document_name):
     add_apache_port(portApache)
     print(username)
     create_apache_conf(full_name, portApache, username)
-    # create_start_script(full_name, portFlask, portVue)
-
-
+    create_start_script(full_name, portFlask, portVue)
 
     return "OK"
 
     
 
+def delete_doc_project(full_name, portApache, portFlask, portVue):
+    print("Deleting documentation project for " + full_name)
+    documentation_path = '../documentation/' + full_name
+    command = "rm -rf " + documentation_path
+    try:
+        # Run the command in Bash explicitly
+        subprocess.run(["bash", "-c", "shopt -s dotglob && " + command + " && shopt -u dotglob"])
+        print("Documentation project deleted successfully.")
+
+    except Exception as e:
+        print(f"Error deleting documentation project: {str(e)}")
+
+    # Disable the site
+    command = f"sudo a2dissite {full_name}.conf"
+    print(command)
+    output = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    print(output)
+
+    # Remove the conf file
+    file_path = '/etc/apache2/sites-available/' + full_name + '.conf'
+    try:
+        os.remove(file_path)
+        print("Apache conf deleted successfully.")
+    except Exception as e:
+        print(f"Error deleting apache conf: {str(e)}")
+
+    # Remove the port from ports.conf
+    file_path = '/etc/apache2/ports.conf'
+    try:
+        with open(file_path, 'r') as file:
+            existing_content = file.read()
+
+        if f"Listen {portApache}" in existing_content:
+            text_block = f"Listen {portApache}\n"
+            with open(file_path, 'w') as file:
+                file.write(existing_content.replace(text_block, ""))
+                print("Apache port removed successfully.")
+        else:
+            print("Apache port does not exist.")
+    except Exception as e:
+        print(f"Error removing apache port: {str(e)}")
+
+    # Restart Apache
+    command = "sudo systemctl restart apache2"
+    print(command)
+    output = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    print(output)
+
+    # Remove the start script
+    file_path = './scripts/' + full_name + '.sh'
+    try:
+        os.remove(file_path)
+        print("Start script deleted successfully.")
+    except Exception as e:
+        print(f"Error deleting start script: {str(e)}")
 
 
+    #Kill processes for flask and vue
+    command = f"sudo kill -9 $(lsof -t -i:{portFlask})"
+    print(command)
+    output = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    print(output)
 
+    command = f"sudo kill -9 $(sudo lsof -t -i:{portVue})"
+    print(command)
+    output = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    print(output)
+
+        
+
+    return "OK"
+
+
+@app.route('/deletedocumentation/<document_name>', methods=['POST'])
+def delete_documentation(document_name):
+    print("Deleting documentation for " + document_name)
+    full_name, customer_name, document_name, portVue, portFlask, portApache = find_documentation(document_name)
+    print(full_name, customer_name, document_name, portVue, portFlask, portApache)
+    delete_doc_project(full_name,portApache, portFlask, portVue)
+
+    return "OK"
 
 if __name__ == '__main__':
     app.run(debug=True, host=host_ip, port=2001)

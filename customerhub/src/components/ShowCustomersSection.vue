@@ -42,15 +42,34 @@
                                 </table>
                                 
                             </li>
+
+
+
+
+
                             <li v-if="addDoc && customer._id == customerId">
-                                <input class="input-document" type="text" placeholder="Document Name" v-model="documentName">
-                                <button class="list-button" @click="saveDocument()"><i class="fas fa-save"></i></button>
-                                <button class="list-button" @click="cancelDocument()"><i class="fas fa-times"></i></button>
+
+                                <div class="upload">
+                                    <input class="input-document" type="text" placeholder="Document Name" v-model="documentName">
+                                    <label for="file" class="list-button"><i class="fas fa-file-upload"></i></label>
+                                    <input id="file" class="upload-file" type="file" @change="uploadFile" ref="file" accept=".docx"/>
+                                    <!-- <input class="upload-file" type="file" ref="file" @change="handleFileUpload" accept=".word" style="display: none" /> -->
+                                    <!-- <label for="file" class="list-button" @click="uploadFile"><i class="fas fa-file-upload"></i></label> -->
+                                    <button class="list-button" @click="saveDocument"><i class="fas fa-save"></i></button>
+                                    <button class="list-button" @click="cancelDocument"><i class="fas fa-times"></i></button>
+
+                                    <!-- Display the selected file name -->
+                                    <div v-if="imageFile" class="selected-file-name">
+                                    {{ fileName }}
+                                    </div>
+                                </div>
+
                             </li>
                         </ul>
                     </td>
                     <td>
                         <button class="list-button" @click="addDocument(customer)">+ <i class="fas fa-file-alt"></i></button>
+
                         <button class="list-button" @click="editCustomer(customer)"><i class="fas fa-edit"></i></button>
                         <button class="list-button" @click="deleteCustomer(customer)"><i class="fas fa-trash"></i></button>
                     </td>
@@ -82,6 +101,11 @@ export default{
             editCustomerCheck: false,
             newCustomerName: '',  
             editDocumentCheck: false,  
+            file: null,
+            imageFile: null,
+            fileName: '',
+
+
         }
     },
 
@@ -122,6 +146,10 @@ export default{
         },
 
         saveDocument(){
+            console.log(this.file);
+            if(this.file){
+                alert('File uploaded successfully');
+            }
             console.log(this.customerId);
             const url = 'http://192.168.6.79:3000/add-document/' + this.customerId;
             
@@ -205,6 +233,18 @@ export default{
                 console.log(error);
             });
         },
+
+        uploadFile(event) {
+            this.file = event.target.files[0];
+            console.log(this.file);
+            // You can now send 'this.file' to your server
+            // Make sure to handle the upload on the server side as well
+        },
+
+
+
+
+
         
     }
 }
@@ -214,5 +254,19 @@ export default{
 
 <style>
 @import '../assets/customerlist.css';
+.upload-file {
+    display: none;
+}
+
+.upload-label {
+    padding: 10px;
+    background-color: #4CAF50; /* Green */
+    color: white;
+    cursor: pointer;
+}
+
+.upload-label:hover {
+    background-color: #45a049; /* Darker green */
+}
 
 </style>

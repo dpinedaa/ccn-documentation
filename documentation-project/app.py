@@ -496,5 +496,86 @@ def update():
 
 
 
+
+
+#Add document details in the details folder 
+@app.route('/document_details/<document_name>', methods=['POST'])  
+def add_document_details(document_name):
+    directory_file_path = f"./public/details/{document_name}.txt"
+    print("directory_file_path: ", directory_file_path)
+    
+    new_content = request.json.get('content', '')
+    print("new_content: ", new_content)
+
+    #Rewrite the file with the new content
+    with open(directory_file_path, 'w') as f:
+        f.write(new_content)
+
+    return "Success"
+
+
+#Get all the document details from the details folder
+@app.route('/document_details/', methods=['GET'])
+def get_all_details():
+    print("Getting all the details")
+    directory_file_path = f"./public/details/"
+    print("directory_file_path: ", directory_file_path)
+
+    try:
+        files = []
+        #Print the files in the folder
+
+        for filename in sorted(os.listdir(directory_file_path), key=lambda x: [int(s) if s.isdigit() else s for s in re.split('(\d+)', x)]):
+            print(filename)
+            if allowed_file(filename):
+                file_path = os.path.join(directory_file_path, filename)
+                with open(file_path, 'rb') as file:
+                    content = file.read().decode('utf-8')
+
+                files.append({'name': filename, 'content': content})
+
+        return jsonify(files)
+
+    except Exception as e:
+        print(f'Error reading files: {e}')
+        return jsonify({'error': 'Internal Server Error'}), 500
+    
+
+#Update multiple details files from the detail folder at once 
+@app.route('/update_details/', methods=['POST'])
+def update_multiple_details():
+    print("Updating multiple details")
+    directory_file_path = f"./public/details/"
+    print("directory_file_path: ", directory_file_path)
+
+    try:
+        #Get the data from the request
+        data = request.json.get('data', [])
+        print("data: ", data)
+
+        for file in data:
+            print("file: ", file)
+            file_name = file['name']
+            print("file_name: ", file_name)
+            file_content = file['content']
+            print("file_content: ", file_content)
+
+            #Rewrite the file with the new content
+            with open(directory_file_path + file_name, 'w') as f:
+                f.write(file_content)
+
+        return "Success"
+
+    except Exception as e:
+        print(f'Error updating files: {e}')
+        return jsonify({'error': 'Internal Server Error'}), 500
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     app.run(debug=True, host=host_ip, port=PORTFLASK)

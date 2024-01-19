@@ -155,7 +155,7 @@ app.post('/add-document/:customerId', async (req, res) => {
       }
   
       // Check for port duplications within all the existing documents
-      const isPortDuplicated = documents.some(doc => (
+      const isPortDuplicated = customer.documents.some(doc => (
         doc.portVue === portVue || doc.portFlask === portFlask || doc.portApache === portApache
       ));
   
@@ -168,10 +168,6 @@ app.post('/add-document/:customerId', async (req, res) => {
   
       // Save the updated customer to the database
       await customer.save();
-
-      //Save the document to the document collection
-      await document.save();
-
   
       res.status(201).json(document);
     } catch (error) {

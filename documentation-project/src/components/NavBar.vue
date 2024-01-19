@@ -5,6 +5,8 @@
               <!-- <option value="">{{ sectionNumber }}</option> -->
       <option v-for="(section, index) in sections" :value="section" :key="index">{{ section }}</option>
     </select>
+      <button class="nav-btn" @click="documentDetails"><i class="fas fa-info-circle"></i></button>
+      <button class="nav-btn" @click="sectionsEditor"><i class="fas fa-edit"></i></button>
       <button class="nav-btn" @click="updateSphinx"><i class="fas fa-sync-alt"></i></button>
       <button class="nav-btn" @click="goToDocumentation"><i class="fas fa-book"></i></button>
     </div>
@@ -30,7 +32,7 @@ export default{
         },
         
         async updateSphinx() {
-            const url = 'http://192.168.6.79:PORTFLASK/update'
+            const url = 'http://192.168.4.31:9876/update'
             const response = await fetch(url, {
                 method: 'POST',
             });
@@ -46,6 +48,14 @@ export default{
             //Refresh current page 
             this.$router.go();
         },
+
+        documentDetails() {
+            this.$router.push('/');
+        },
+
+        sectionsEditor() {
+            this.$router.push('/sections');
+        }
     }
 }
 
