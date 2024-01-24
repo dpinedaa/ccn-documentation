@@ -94,7 +94,7 @@ export default{
     },
     methods:{
         async getDocumentDetails(){
-            const url = 'http://192.168.6.79:PORTFLASK/document_details'
+            const url = 'http://192.168.6.79:65000/document_details'
             axios.get(url)
             .then(response => {
                 console.log(response.data);
@@ -128,7 +128,7 @@ export default{
             })
         },
         async saveAll() {
-            const main_url = 'http://192.168.6.79:PORTFLASK/document_details/';
+            const main_url = 'http://192.168.6.79:65000/document_details/';
             const details = [
                 { endpoint: 'documenttitle', content: this.docTitle },
                 { endpoint: 'documentclient', content: this.docClient },

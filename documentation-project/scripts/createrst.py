@@ -68,18 +68,17 @@ def extract_text_content_and_style(file_content, filename, section_number):
             content_text = line.split(":", 1)[1].strip()
             if ".png) --> Element Number" in line:
                 break  # Exit the loop, no need to process the rest of the file
-            if length > 4 and style == "Code Standalone":
-                print(content_text)
-                content_text = ""
-                # Adjust the indentation in the "Content" block
-                indent_level = line.find("{") + 1
-                content_text += " " * current_indentation + line.split(":", 1)[1].strip() + "\n"
-                if "{" in line:
-                    current_indentation += 4
+            # if length > 4 and style == "Code Standalone":
+            #     print(content_text)
+            #     content_text = ""
+            #     # Adjust the indentation in the "Content" block
+            #     indent_level = line.find("{") + 1
+            #     content_text += " " * current_indentation + line.split(":", 1)[1].strip() + "\n"
+            #     if "{" in line:
+            #         current_indentation += 4
             elif style == "Normal":
                 content_text += "\n"
-            elif style == "Code Standalone":
-                print(content_text)
+
 
         elif length > 4:
             if style == "Normal":
@@ -112,14 +111,14 @@ def write_txt_to_rst(content_text, style, section_number, output_folder, filenam
             rst_file.write(f"{content_text}\n")
             rst_file.write("-" * len(content_text) + "\n\n")
         elif style == "Caption":
-            rst_file.write(f"\n\n**{content_text}:**\n\n")
+            rst_file.write(f"\n**{content_text}**\n\n")
         elif style == "List Paragraph":
             rst_file.write(f"* {content_text}\n\n")
         elif style == "Normal":
             rst_file.write(f"{content_text}\n\n")
         elif style == "Bold":
             rst_file.write(f"\n**{content_text}**\n\n")
-        elif style == "Code Standalone":
+        else:
             codeblock_path = os.path.join('../../public', f'section{section_number}', filename)
             rst_file.write(f".. literalinclude:: {codeblock_path}\n")
             rst_file.write('   :language: bash\n\n')
@@ -179,14 +178,123 @@ def add_files_to_rst(output_folder):
             elif filename.endswith(".png"):
                 process_file_png( section_number, output_folder, filename)
 
+def modify_index_rst(output_folder):
+    rst_path = "./read-the-docs/source/index.rst"
+    content_rst_path = "./read-the-docs/source/"
+    directory_path = "./public/details/"
+    contents = []
+    #iterate over details directory sorted
+    authors = ""
+    client = ""
+    issue_date = ""
+    number = ""
+    security_status = ""
+    status = ""
+    title = ""
 
+    for file in sorted(os.listdir(directory_path)):
+        print(file)
+        if (file.endswith("authors.txt")):
+            with open(os.path.join(directory_path, file), 'r') as f:
+                authors = f.read()
+                print(authors)
+        elif (file.endswith("client.txt")):
+            with open(os.path.join(directory_path, file), 'r') as f:
+                client = f.read()
+                print(client)
+        elif (file.endswith("issuedate.txt")):
+            with open(os.path.join(directory_path, file), 'r') as f:
+                issue_date = f.read()
+                print(issue_date)
+
+        elif (file.endswith("number.txt")):
+            with open(os.path.join(directory_path, file), 'r') as f:
+                number = f.read()
+                print(number)
+
+        elif (file.endswith("securitystatus.txt")):
+            with open(os.path.join(directory_path, file), 'r') as f:
+                security_status = f.read()
+                print(security_status)
+
+        elif (file.endswith("status.txt")):
+            with open(os.path.join(directory_path, file), 'r') as f:
+                status = f.read()
+                print(status)
+
+        elif (file.endswith("documenttitle.txt")):
+            with open(os.path.join(directory_path, file), 'r') as f:
+                title = f.read()
+                print(title)
+
+
+
+
+
+    full_name = f"{client}-{title}"
+    rst_file_path = os.path.join(output_folder, f'index.rst')
+    with open(rst_path,"w") as rst_file:
+        rst_file.write(f"{full_name}\n")
+        rst_file.write("=" * len(full_name) + "\n\n")
+        rst_file.write("**Document Number:** "+ number +"\n\n")
+        rst_file.write("**Document Status:** "+ status +"\n\n")
+        rst_file.write("**Issue Date:** "+ issue_date +"\n\n")
+        rst_file.write("**Security Status:** "+ security_status +"\n\n")
+        rst_file.write("**Authors:** "+ authors +"\n\n")
+
+
+        rst_file.write("CIRRUS CORE NETWORKS CONFIDENTIAL:\n\n")
+        rst_file.write("The information contained in this document is the property of Cirrus Core Networks.")
+        rst_file.write(" Except as specifically authorized in writing by Cirrus Core Networks,")
+        rst_file.write(" the holder of this document shall keep the information contained herein confidential")
+        rst_file.write(" and shall protect same in whole or in part from disclosure and dissemination to third parties")
+        rst_file.write(" and use same for evaluation, operation and maintenance purposes only.")
+        rst_file.write(f" *{client} will not copy, fax, reproduce, divulge, or distribute this Plan,")
+        rst_file.write(" completely or in part, without the express written consent of CCN Inc.*")
+        rst_file.write(" **CIRRUS CORE NETWORKS, INC.** retains all title, ownership and intellectual property rights")
+        rst_file.write(" to the material and trademarks contained herein, including all supporting documentation,")
+        rst_file.write(" files, marketing materials, and multimedia.\n\n")
+        rst_file.write("By acceptance of this document, the recipient agrees to be bound by the aforementioned statements.\n\n")
+
+        rst_file.write(".. toctree::\n")
+        rst_file.write("   :maxdepth: 2\n\n")
+        rst_file.write("   :caption: Contents:\n\n")
+
+        rst_file.write("   section1.rst\n")
+        rst_file.write("   section2.rst\n")
+        rst_file.write("   section3.rst\n")
+        rst_file.write("   section4.rst\n")
+        rst_file.write("   section5.rst\n")
+        rst_file.write("   section6.rst\n")
+        rst_file.write("   section7.rst\n")
+        rst_file.write("   section8.rst\n")
+        rst_file.write("   section9.rst\n")
+        rst_file.write("   section10.rst\n")
+        rst_file.write("   section11.rst\n")
+        rst_file.write("   section12.rst\n")
+        rst_file.write("   section13.rst\n")
+        rst_file.write("   section14.rst\n")
+        rst_file.write("   section15.rst\n")
+        rst_file.write("   section16.rst\n")
+        rst_file.write("   section17.rst\n")
+        rst_file.write("   section18.rst\n")
+        rst_file.write("   section19.rst\n")
+        rst_file.write("   section20.rst\n")
+
+
+
+    
+        
 
 # create main
 def main():
     remove_old_rsts(output_folder)
     gather_titles(file_directory)
     add_files_to_rst(output_folder)
+    modify_index_rst(output_folder)
+
 
 
 if __name__ == "__main__":
     main()
+

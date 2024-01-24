@@ -7,6 +7,7 @@ import socket
 import sys
 import requests
 import shutil
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -41,6 +42,8 @@ def create_directory(document_name):
 
 
 def find_documentation(document_name):
+    time.sleep(5)
+
     print("Finding documentation for " + document_name)
     url = "http://192.168.6.79:3000/document/" + document_name
     print(url)
@@ -74,28 +77,92 @@ def copy_documentation_project(document_name):
 
 
 
-def find_and_replace(full_name, customer_name, document_name, portFlask):
+def find_and_replace(full_name, customer_name, document_name, portFlask,portApache):
     print("Finding and replacing documentation for " + full_name)
     documentation_path = '../documentation/' + full_name
-    command = "find " + documentation_path + " -type f -exec sed -i 's/my-project/" + full_name + "/g' {} +"
-    command2 = "find " + documentation_path + " -type f -exec sed -i 's/PORTFLASK/" + str(portFlask) + "/g' {} +"
-    command3 = "find " + documentation_path + " -type f -exec sed -i 's/DOCUMENTNAME/" + document_name + "/g' {} +"
-    command4 = "find " + documentation_path + " -type f -exec sed -i 's/CUSTOMERNAME/" + customer_name + "/g' {} +"
+
+    
+    # command = "find " + documentation_path + " -type f -exec sed -i 's/my-project/" + full_name + "/g' {} +"
+    #replace my-project with the full name in package.json and package-lock.json
+
+    command = "sed -i 's/my-project/" + full_name + "/g' " + documentation_path + "/package.json"
+    command1 = "sed -i 's/my-project/" + full_name + "/g' " + documentation_path + "/package-lock.json" 
+    src_path = documentation_path + "/src"
+    command2 = "find " + src_path + " -type f -exec sed -i 's/65000/" + str(portFlask) + "/g' {} +"
+    app_path = documentation_path + "/app.py"
+    command2_5 = "find " + app_path + " -type f -exec sed -i 's/65000/" + str(portFlask) + "/g' {} +"
+    headerComponent = documentation_path + "/src/components/HeaderSection.vue"
+    command3 = "find " + headerComponent + " -type f -exec sed -i 's/DOCUMENTNAME/" + document_name + "/g' {} +"
+    command4 = "find " + headerComponent + " -type f -exec sed -i 's/CUSTOMERNAME/" + customer_name + "/g' {} +"
+    navBar = documentation_path + "/src/components/NavBar.vue"
+    command5 = "find " + navBar + " -type f -exec sed -i 's/65555/" + str(portApache) + "/g' {} +"
 
     try:
         subprocess.run(command, shell=True)
         print("Replace my-project with " + full_name + " successfully.")
+        subprocess.run(command1, shell=True)
+        print("Replace my-project with " + full_name + " successfully.")
         subprocess.run(command2, shell=True)
+        print("Replace PORTFLASK with " + str(portFlask) + " successfully.")
+        subprocess.run(command2_5, shell=True)
         print("Replace PORTFLASK with " + str(portFlask) + " successfully.")
         subprocess.run(command3, shell=True)
         print("Replace DOCUMENTNAME with " + document_name + " successfully.")
         subprocess.run(command4, shell=True)
         print("Replace CUSTOMERNAME with " + customer_name + " successfully.")
+        subprocess.run(command5, shell=True)
+        print("Replace PORTAPACHE with " + str(portApache) + " successfully.")
+        
 
     except Exception as e:
         print(f"Error finding and replacing documentation: {str(e)}")
 
+
+
+def modify_details(full_name, customer_name, document_name):
+    print("Modifying details for " + full_name)
+    details_dir = '../documentation/' + full_name + '/public/details'
+
+    #modify the documentauthors.txt
+    with open(details_dir + '/documentauthors.txt', 'w') as file:
+        text_block = "ccn"
+        file.write(text_block)
+        print("Document authors modified successfully.")
+
+    with open(details_dir + '/documentclient.txt', 'w') as file:
+        text_block = customer_name
+        file.write(text_block)
+        print("Document client modified successfully.")
     
+    with open(details_dir + '/documentissuedate.txt', 'w') as file:
+        #today's date in this format yyyy-mm-dd
+        text_block = time.strftime("%Y-%m-%d")
+        file.write(text_block)
+        print("Document date modified successfully.")
+
+    with open(details_dir + '/documentnumber.txt', 'w') as file:
+        text_block = "1"
+        file.write(text_block)
+        print("Document number modified successfully.")
+
+    with open(details_dir + '/documentsecuritystatus.txt', 'w') as file:
+        text_block = "Confidential"
+        file.write(text_block)
+        print("Document security status modified successfully.")
+    
+    with open(details_dir + '/documentstatus.txt', 'w') as file:
+        text_block = "In Progress"
+        file.write(text_block)
+        print("Document status modified successfully.")
+
+    with open(details_dir + '/documenttitle.txt', 'w') as file:
+        text_block = document_name
+        file.write(text_block)
+        print("Document title modified successfully.")
+
+
+
+
 def add_apache_port(portApache):
     print("Adding apache port " + str(portApache))
     file_path = '/etc/apache2/ports.conf'
@@ -199,7 +266,8 @@ def create_documentation(document_name):
     full_name, customer_name, document_name, portVue, portFlask, portApache = find_documentation(document_name)
     print(full_name, customer_name, document_name, portVue, portFlask, portApache)
     copy_documentation_project(full_name)
-    find_and_replace(full_name, customer_name, document_name, portFlask)
+    find_and_replace(full_name, customer_name, document_name, portFlask, portApache)
+    modify_details(full_name,customer_name, document_name)
     username = get_username()
     add_apache_port(portApache)
     print(username)
@@ -213,7 +281,7 @@ def create_documentation(document_name):
 def delete_doc_project(full_name, portApache, portFlask, portVue):
     print("Deleting documentation project for " + full_name)
     documentation_path = '../documentation/' + full_name
-    command = "rm -rf " + documentation_path
+    command = "sudo rm -rf " + documentation_path
     try:
         # Run the command in Bash explicitly
         subprocess.run(["bash", "-c", "shopt -s dotglob && " + command + " && shopt -u dotglob"])
@@ -291,6 +359,251 @@ def delete_documentation(document_name):
     delete_doc_project(full_name,portApache, portFlask, portVue)
 
     return "OK"
+
+
+@app.route('/add-word-doc/<document_name>', methods=['POST'])
+def add_word_doc(document_name):
+    create_directory(document_name)
+    print("Adding word doc for " + document_name)
+    #Receive word doc from the body of the request
+    word_doc = request.files['word_doc']
+    print(word_doc)
+    #Save the word doc in the documentation folder
+    documentation_path = '../documentation/' + document_name
+    print(documentation_path)
+    word_doc.save(os.path.join(documentation_path, "initial.docx"))
+    print("Word doc added successfully.")
+    return "OK"
+
+@app.route('/convert/<document_name>', methods=['POST'])
+def convert_word(document_name):
+    print("Converting word doc for " + document_name)
+    #Convert the word doc to html
+    documentation_path = '../documentation/' + document_name
+    #check if the initial.docx exists
+    if os.path.isfile(documentation_path + "/initial.docx"):
+        print("File exists")
+        command = f"python3 extract.py {document_name}"
+        print(command)
+        output = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        print(output)
+        print("Word doc converted successfully.")
+        return "OK"
+    else:
+        print("File does not exist")
+        return "Error"
+
+
+#Check if the project is running 
+@app.route('/check/<document_name>', methods=['POST'])
+def check_project(document_name):
+    print("Checking project for " + document_name)
+    full_name, customer_name, document_name, portVue, portFlask, portApache = find_documentation(document_name)
+    print(full_name, customer_name, document_name, portVue, portFlask, portApache)
+    #check if the project is running vue js
+    command = f"sudo lsof -t -i:{portVue}"
+    print(command)
+    output = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    print(output)
+    if output.stdout == "":
+        print("Project is not running.")
+        return "Not running"
+    else:
+        print("Project is running.")
+        return "Running"
+    
+
+@app.route('/delete-customer-projects/<customer_name>/<ID>', methods=['POST'])
+def delete_customer_project(customer_name, ID):
+    #Find all the projects for the customer
+    print("Deleting customer project for " + customer_name)
+    url = "http://192.168.6.79:3000/customer/" + ID
+    print(url)
+    #get documentation
+    response = requests.get(url)
+    print(response.json())
+
+    for document in response.json()['documents']:
+        full_name = document['_id']
+        print(full_name)
+        delete_doc_project(full_name, document['portApache'], document['portFlask'], document['portVue'])
+        print("Project deleted successfully.")
+    
+    #ensure that all the directories are deleted 
+    documentation_path = '../documentation/' 
+    command = "sudo rm -rf " + documentation_path + customer_name+"*"
+    subprocess.run(command, shell=True)
+    print("Directories deleted successfully.")
+
+    return "OK"
+
+# Modify the document name 
+@app.route('/modify-document-name/<document_name>', methods=['POST'])
+def modify_document_name(document_name): 
+    print("Modifying document name for " + document_name)
+    #Get the new name from the body of the request
+    name = request.get_json()['name']
+    print(name)
+
+    document_name0 = document_name.split('-')[0]
+    document_name1 = document_name.split('-')[1]
+    print(document_name0)
+    print(document_name1)
+
+    documentation_dir = '../documentation/' + document_name
+    #Find and replace the document name in the documentation folder specific documents 
+    file1 = documentation_dir + '/package-lock.json'
+    file2 = documentation_dir + '/package.json'
+    file3 = documentation_dir + '/public/details/documenttitle.txt'
+    file4 = documentation_dir + '/src/components/HeaderSection.vue'
+    file5 = "/etc/apache2/sites-available/" + document_name + ".conf"
+    file6 = "./scripts/" + document_name + ".sh"
+
+    #Replace the document_name1 with name in the files 
+    command = f"sed -i 's/{document_name1}/{name}/g' {file1} {file2} {file3} {file4} {file5} {file6}"
+    # command = f"sed -i 's/{document_name1}/{name}/g' {file6}"
+    print(command)
+    output = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    print(output)
+
+    #Rename the documentation folder
+    new_documentation_dir = '../documentation/' + document_name0 + '-' + name
+    os.rename(documentation_dir, new_documentation_dir)
+
+    #rename conf file 
+    new_file5 = "/etc/apache2/sites-available/" + document_name0 + '-' + name + ".conf"
+    os.rename(file5, new_file5)
+
+    #rename start script
+    new_file6 = "./scripts/" + document_name0 + '-' + name + ".sh"
+    os.rename(file6, new_file6)
+
+    return "OK"
+
+
+def modify_apache_conf(customer_name, name):
+    print("Modifying apache conf for " + customer_name)
+    sites_available_dir = "/etc/apache2/sites-available/"
+    files = []
+    #Find all the conf files for the customer
+    for filename in os.listdir(sites_available_dir):
+        if filename.startswith(customer_name):
+            print(filename)
+            files.append(filename)
+
+    
+    for file in files:
+        file_path = sites_available_dir + file
+        print(file_path)
+        #Replace the customer name in the conf file
+        command = f"sed -i 's/{customer_name}/{name}/g' {file_path}"
+        print(command)
+        output = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        print(output)
+        #Rename the conf file
+        filename0 = file.split('-')[0]
+        filename1 = file.split('-')[1]
+        new_file_path = sites_available_dir + name + '-' + filename1
+        print(new_file_path)
+        os.rename(file_path, new_file_path)
+
+        command = f"sudo a2ensite {name}-{filename1}"
+        print(command)
+        output = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        print(output)
+
+        #Restart apache
+        command = "sudo systemctl reload apache2"
+        print(command)
+        output = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        print(output)
+
+
+        
+    
+
+
+def modify_scripts(customer_name, name):
+    print("Modifying scripts for " + customer_name)
+    scripts_dir = "./scripts/"
+    files = []
+    #Find all the scripts for the customer
+    for filename in os.listdir(scripts_dir):
+        if filename.startswith(customer_name):
+            print(filename)
+            files.append(filename)
+
+    
+    for file in files:
+        file_path = scripts_dir + file
+        print(file_path)
+        #Replace the customer name in the script
+        command = f"sed -i 's/{customer_name}/{name}/g' {file_path}"
+        print(command)
+        output = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        print(output)
+        #Rename the script
+        filename0 = file.split('-')[0]
+        filename1 = file.split('-')[1]
+        new_file_path = scripts_dir + name + '-' + filename1
+        print(new_file_path)
+        os.rename(file_path, new_file_path)
+
+    
+
+def modify_directories(customer_name, name):
+    print("Modifying directories for " + customer_name)
+    documentation_dir = "../documentation/"
+    directories = []
+    #Find all the directories for the customer
+    for filename in os.listdir(documentation_dir):
+        if filename.startswith(customer_name):
+            #print(filename)
+            directories.append(filename)
+
+    for directory in directories:
+        print(directory)
+        file1 = documentation_dir + directory + '/package-lock.json'
+        file2 = documentation_dir + directory + '/package.json'
+        file3 = documentation_dir + directory + '/public/details/documentclient.txt'
+        file4 = documentation_dir + 'src/components/HeaderSection.vue'
+
+        #Replace the customer name in the files
+        command = f"sed -i 's/{customer_name}/{name}/g' {file1} {file2} {file3} {file4}"
+        print(command)
+        output = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        print(output)
+        #Rename the directory
+        filename0 = directory.split('-')[0]
+        filename1 = directory.split('-')[1]
+        new_directory = documentation_dir + name + '-' + filename1
+        print(new_directory)
+        os.rename(documentation_dir + directory, new_directory)
+
+
+
+
+   
+
+    
+    
+# Modify the customer name in all files 
+@app.route('/modify-customer-name/<customer_name>', methods=['POST'])
+def modify_customer_name(customer_name): 
+    print("Modifying customer name for " + customer_name)
+    #Get the new name from the body of the request
+    name = request.get_json()['name']
+    print(name)
+    
+    modify_scripts(customer_name, name) 
+    modify_directories(customer_name, name)
+    modify_apache_conf(customer_name, name)
+
+    
+    return "OK"
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host=host_ip, port=2001)

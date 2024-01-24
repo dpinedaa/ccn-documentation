@@ -578,4 +578,4 @@ def update_multiple_details():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host=host_ip, port=PORTFLASK)
+    app.run(debug=True, host=host_ip, port=65000)

@@ -81,32 +81,120 @@ try {
 }
 });
 
-//Delete a customer
-app.delete('/customers/:id', async (req, res) => {
-    try {
-      const { id } = req.params;
-  
-      // Delete the customer
-      await Customer.findByIdAndDelete(id);
-  
-      res.status(200).json({ message: 'Customer deleted successfully' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
 
-  // Delete all customers 
-app.delete('/customers', async (req, res) => {
-    try {
-      // Delete all customers
-      await Customer.deleteMany();
-  
-      res.status(200).json({ message: 'Customers deleted successfully' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+// Delete a customer and associated documents
+app.delete('/customers/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    console.log(id);
+
+    // Find the customer by ID
+    const customer = await Customer.findById(id);
+
+    if (!customer) {
+      return res.status(404).json({ error: 'Customer not found' });
     }
+
+    // Get document IDs associated with the customer
+    const documentIds = customer.documents.map(doc => doc._id);
+
+    // Delete the customer
+    await Customer.findByIdAndDelete(id);
+
+    // Delete associated documents from the document collection
+    await Document.deleteMany({ _id: { $in: documentIds } });
+
+    res.status(200).json({ message: 'Customer and associated documents deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+ 
+
+
+
+
+
+
+
+
+
+// Function to obtain portVue values
+async function getAvailablePortVue() {
+  try {
+    // Get all documents
+    const documents = await Document.find();
+
+    for (let portVue = 2002; portVue <= 4000; portVue++) {
+      // Check if the current portVue is available
+      const isPortVueAvailable = documents.every(doc => {
+        return portVue !== doc.portVue;
+      });
+
+      // If the portVue is available, return it
+      if (isPortVueAvailable) {
+        return portVue;
+      }
+    }
+
+    // If no available portVue is found, you might want to handle this case
+    throw new Error('No available portVue found between 2002 and 4000');
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error obtaining portVue values');
+  }
+}
+
+// Add a document to a customer
+app.post('/add-document/:customerId', async (req, res) => {
+  try {
+    const available = await getAvailablePortVue();
+    console.log(available);
+
+    const customerId = req.params.customerId;
+    const { name } = req.body;
+
+    // Find the customer by ID
+    const foundCustomer = await Customer.findById(customerId);
+    const customerName = foundCustomer.name;
+
+    const portVue = available;
+    const portFlask = available + 2000;
+    const portApache = available + 4000;
+
+    const customer_document = customerName + "-" + name;
+
+    // Create a new document
+    const document = new Document({
+      customer_document,
+      name,
+      portVue,
+      portFlask,
+      portApache,
+    });
+
+    // Find the customer by ID
+    const customer = await Customer.findById(customerId);
+
+    if (!customer) {
+      return res.status(404).json({ error: 'Customer not found' });
+    }
+
+    // Add the document to the customer
+    customer.documents.push(document);
+
+    // Save the updated customer to the database
+    await customer.save();
+
+    await document.save();
+
+    res.status(201).json(document);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 
@@ -119,85 +207,6 @@ app.delete('/customers', async (req, res) => {
 
 
 
-
-
-// Add a document to a customer
-app.post('/add-document/:customerId', async (req, res) => {
-    try {
-    
-      const customerId = req.params.customerId;
-      const { name } = req.body;
-
-      //Find the customer by ID 
-      const foundCustomer = await Customer.findById(customerId);
-      const customerName = foundCustomer.name;
-
-      
-      // Generate and assign ports based on specified ranges
-      const portVue = await generateUniquePort(2003, 4000);
-      const portFlask = await generateUniquePort(4003, 6000);
-      const portApache = await generateUniquePort(6003, 8000);
-      const customer_document = customerName + "-" + name;
-      // Create a new document
-      const document = new Document({
-        customer_document,
-        name,
-        portVue,
-        portFlask,
-        portApache,
-      });
-  
-      // Find the customer by ID
-      const customer = await Customer.findById(customerId);
-  
-      if (!customer) {
-        return res.status(404).json({ error: 'Customer not found' });
-      }
-  
-      // Check for port duplications within all the existing documents
-      const isPortDuplicated = customer.documents.some(doc => (
-        doc.portVue === portVue || doc.portFlask === portFlask || doc.portApache === portApache
-      ));
-  
-      if (isPortDuplicated) {
-        return res.status(400).json({ error: 'Port duplication detected' });
-      }
-  
-      // Add the document to the customer
-      customer.documents.push(document);
-  
-      // Save the updated customer to the database
-      await customer.save();
-  
-      res.status(201).json(document);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
-  
-  // Function to generate a unique port within the specified range
-  async function generateUniquePort(min, max) {
-    let port;
-    do {
-      port = Math.floor(Math.random() * (max - min + 1)) + min;
-    } while (await isPortInUse(port));
-  
-    return port;
-  }
-  
-  // Function to check if a port is already in use
-  async function isPortInUse(port) {
-    const existingDocument = await Document.findOne({
-      $or: [
-        { portVue: port },
-        { portFlask: port },
-        { portApache: port },
-      ],
-    });
-  
-    return !!existingDocument;
-  }
 
   //Get a specific document
 app.get('/document/:documentId', async (req, res) => {
@@ -220,37 +229,41 @@ app.get('/document/:documentId', async (req, res) => {
 
   
 
-  // Delete a document from a customer
+// Delete a document from a customer
 app.delete('/delete-document/:customerId/:documentId', async (req, res) => {
-    try {
+  try {
       const { customerId, documentId } = req.params;
-  
+
       // Find the customer by ID
       const customer = await Customer.findById(customerId);
-  
+
       if (!customer) {
-        return res.status(404).json({ error: 'Customer not found' });
+          return res.status(404).json({ error: 'Customer not found' });
       }
-  
+
       // Find the document by ID
       const documentIndex = customer.documents.findIndex(doc => doc._id == documentId);
-  
+
       if (documentIndex === -1) {
-        return res.status(404).json({ error: 'Document not found' });
+          return res.status(404).json({ error: 'Document not found' });
       }
-  
+
       // Remove the document from the customer's array
       const deletedDocument = customer.documents.splice(documentIndex, 1)[0];
-  
+
+      // Delete the document from the overall documents collection
+      await Document.findByIdAndDelete(documentId);
+
       // Save the updated customer to the database
       await customer.save();
-  
+
       res.status(200).json({ message: 'Document deleted successfully', deletedDocument });
-    } catch (error) {
+  } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
+  }
+});
+
 
 
 //Allow to update the customer name
@@ -258,6 +271,8 @@ app.put('/update-customer/:id', async (req, res) => {
     try {
       const { id } = req.params;
       const { name } = req.body;
+
+      console.log(id);  
   
       // Find the customer by ID
       const customer = await Customer.findById(id);
@@ -279,14 +294,27 @@ app.put('/update-customer/:id', async (req, res) => {
     }
   });
 
+
+
 //Allow to update the document name
 app.put('/update-document/:customerId/:documentId', async (req, res) => {
+
+    //get the document collection 
+    const documents = await Document.find();
+    console.log("Documents: ");
+    console.log(documents);
     try {
       const { customerId, documentId } = req.params;
       const { name } = req.body;
-  
+
+      console.log(customerId);
+      console.log(documentId);
+      console.log(name);
+
       // Find the customer by ID
       const customer = await Customer.findById(customerId);
+
+      console.log("Customer: " + customer);
   
       if (!customer) {
         return res.status(404).json({ error: 'Customer not found' });
@@ -294,16 +322,35 @@ app.put('/update-document/:customerId/:documentId', async (req, res) => {
   
       // Find the document by ID
       const document = customer.documents.find(doc => doc._id == documentId);
-  
+      console.log("Document: " + document);
+      
       if (!document) {
         return res.status(404).json({ error: 'Document not found' });
       }
   
       // Update the document's name
       document.name = name;
+      document._id = customer.name + "-" + name;
+
   
       // Save the updated customer to the database
       await customer.save();
+
+      let doc = await Document.findOne({ _id: documentId });
+      const newID = customer.name + "-" + name;
+      let newDoc = new Document({
+        _id: newID,
+        name: name,
+        portVue: doc.portVue,
+        portFlask: doc.portFlask,
+        portApache: doc.portApache,
+        customerName: doc.customerName
+      });
+
+
+      await newDoc.save();
+      await Document.deleteOne({ _id: documentId });
+
   
       res.status(200).json(document);
     } catch (error) {
@@ -314,6 +361,55 @@ app.put('/update-document/:customerId/:documentId', async (req, res) => {
   
 
 
+
+
+
+
+
+//Get all documents
+app.get('/documents', async (req, res) => {
+
+  // Call the function to get available portVue
+  getAvailablePortVue();
+    try {
+      const documents = await Document.find();
+      res.status(200).json(documents);
+
+      // Iterate over the documents and print details
+      documents.forEach(doc => {
+        console.log(`Document ID: ${doc._id}`);
+        console.log(`Name: ${doc.name}`);
+        console.log(`PortVue: ${doc.portVue}`);
+        console.log(`PortFlask: ${doc.portFlask}`);
+        console.log(`PortApache: ${doc.portApache}`);
+        console.log('------------------------');
+    });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+
+  //Get specific customer
+app.get('/customer/:customerId', async (req, res) => {
+    try {
+      const { customerId } = req.params;
+  
+      // Find the customer by ID
+      const customer = await Customer.findById(customerId);
+  
+      if (!customer) {
+        return res.status(404).json({ error: 'Customer not found' });
+      }
+  
+      res.status(200).json(customer);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+);
 
 
 // Start the server

@@ -112,7 +112,7 @@
         const fileName = this.$store.getters.filename;
         const scrollPosition = window.scrollY;
         const updatedContent = this.editedContents[fileName];
-        const apiUrl = 'http://192.168.6.79:PORTFLASK/update_file/' + this.sectionNumber + '/' + fileName;  
+        const apiUrl = 'http://192.168.6.79:65000/update_file/' + this.sectionNumber + '/' + fileName;  
         console.log(updatedContent);
         if (fileName.endsWith('.csv')) {
             const updatedCSVContent = this.convertToCSV(updatedContent);

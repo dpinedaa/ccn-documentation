@@ -55,7 +55,7 @@
                                     <input id="file" class="upload-file" type="file" @change="uploadFile" ref="file" accept=".docx"/>
                                     <!-- <input class="upload-file" type="file" ref="file" @change="handleFileUpload" accept=".word" style="display: none" /> -->
                                     <!-- <label for="file" class="list-button" @click="uploadFile"><i class="fas fa-file-upload"></i></label> -->
-                                    <button class="list-button" @click="saveDocument"><i class="fas fa-save"></i></button>
+                                    <button class="list-button" @click="saveDocument(customer)"><i class="fas fa-save"></i></button>
                                     <button class="list-button" @click="cancelDocument"><i class="fas fa-times"></i></button>
 
                                     <!-- Display the selected file name -->
@@ -104,6 +104,7 @@ export default{
             file: null,
             imageFile: null,
             fileName: '',
+            customername: '',
 
 
         }
@@ -125,18 +126,34 @@ export default{
             });
         },
 
-        deleteCustomer(customer){
+        async deleteCustomer(customer) {
+            await this.deteleCustomerProjects(customer);
+
             const url = 'http://192.168.6.79:3000/customers/' + customer._id;
 
-            axios.delete(url).then((response) => {
-                console.log(response);
-                this.getCustomers();
-                
-            }).catch((error) => {
-                console.log(error);
-            });
+            axios.delete(url)
+                .then((response) => {
+                    console.log(response);
+                    this.getCustomers();
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
             window.location.reload();
         },
+
+        async deteleCustomerProjects(customer) {
+            const url = 'http://192.168.6.79:2001/delete-customer-projects/' + customer.name + '/' + customer._id;
+
+            try {
+                const response = await axios.post(url);
+                console.log(response);
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
 
         addDocument(customer){
             this.addDoc = true;
@@ -145,10 +162,12 @@ export default{
             this.customerId = customer._id;
         },
 
-        saveDocument(){
+        async saveDocument(customer){
+            console.log(customer.name);
             console.log(this.file);
             if(this.file){
-                alert('File uploaded successfully');
+                this.customername = customer.name;
+                this.saveFile(this.documentName);
             }
             console.log(this.customerId);
             const url = 'http://192.168.6.79:3000/add-document/' + this.customerId;
@@ -166,23 +185,102 @@ export default{
                 this.getCustomers();
                 this.addDoc = false;
                 this.documentName = '';
-                window.location.reload();
             }).catch((error) => {
                 console.log(error);
             });
+
+            this.createDocumentComponents(this.documentName,customer.name);
+
+            
+
+
         },
 
-        deleteDocument(customer, document){
+        async createDocumentComponents(documentname, customername) {
+            const full_name = customername + '-' + documentname;
+            const url = 'http://192.168.6.79:2001/createdocumentation/' + full_name;
+
+            await axios.post(url)
+                .then((response) => {
+                    console.log(response);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+            console.log('Before setTimeout');
+
+            // setTimeout(() => {
+            //     console.log('Inside setTimeout');
+            //     window.alert(documentname + ' has been created');
+            // }, 30000);
+
+            console.log('After setTimeout');
+
+            this.convertDocument(documentname, customername);   
+
+            // window.location.reload();
+        },
+
+        async convertDocument(documentname, customername) {
+            const full_name = customername + '-' + documentname;
+            const url = 'http://192.168.6.79:2001/convert/' + full_name;
+
+            await axios.post(url)
+                .then((response) => {
+                    console.log(response);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+            console.log('Before setTimeout');
+
+            setTimeout(() => {
+                console.log('Inside setTimeout');
+                window.alert(documentname + ' is ready');
+            }, 1000);
+
+            //Reset the file
+            this.file = null;
+  
+        },
+
+
+        async deleteDocument(customer, document) {
+            await this.deleteDocumentComponent(document.name, customer.name);
+
             const url = 'http://192.168.6.79:3000/delete-document/' + customer._id + '/' + document._id;
-            axios.delete(url).then((response) => {
+            
+            try {
+                const response = await axios.delete(url);
                 console.log(response);
                 this.getCustomers();
-                window.location.reload();
                 
-            }).catch((error) => {
+            } catch (error) {
                 console.log(error);
-            });
+            }
+
+
+            //tell user that the document has been deleted
+            window.alert(document.name + ' has been deleted');
+            window.location.reload();
+
+        
         },
+
+        async deleteDocumentComponent(documentname, customername) {
+            const full_name = customername + '-' + documentname;
+            const url = 'http://192.168.6.79:2001/deletedocumentation/' + full_name;
+
+            try {
+                const response = await axios.post(url);
+                console.log(response);
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
 
         editCustomer(customer){
             this.editCustomerCheck = true;
@@ -197,7 +295,9 @@ export default{
             window.location.reload();
         },
 
-        saveCustomer(customer){
+        async saveCustomer(customer){
+            await this.updateCustomerProjects(customer);
+
             const url = 'http://192.168.6.79:3000/update-customer/' + customer._id;
 
             axios.put(url, {
@@ -206,8 +306,20 @@ export default{
                 console.log(response);
                 this.getCustomers();
                 this.editCustomerCheck = false;
-                this.newCustomerName = '';
                 window.location.reload();
+            }).catch((error) => {
+                console.log(error);
+            });
+            
+        },
+
+        async updateCustomerProjects(customer){
+            const url = 'http://192.168.6.79:2001/modify-customer-name/' + customer.name;
+
+            await axios.post(url, {
+                name: this.newCustomerName,
+            }).then((response) => {
+                console.log(response);
             }).catch((error) => {
                 console.log(error);
             });
@@ -219,7 +331,9 @@ export default{
             console.log(document);
         },
 
-        updateDocumentName(customer, document){
+        async updateDocumentName(customer, document){
+            await this.updateDocumentNameFiles(customer, document);
+
             const url = 'http://192.168.6.79:3000/update-document/' + customer._id + '/' + document._id;
 
             axios.put(url, {
@@ -234,13 +348,38 @@ export default{
             });
         },
 
+        async updateDocumentNameFiles(customer, document){
+            const url = 'http://192.168.6.79:2001/modify-document-name/' + document._id;
+            console.log(url);
+            try {
+                const response = await axios.post(url, {
+                    name: document.name,
+                });
+                console.log(response);
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
         uploadFile(event) {
             this.file = event.target.files[0];
             console.log(this.file);
-            // You can now send 'this.file' to your server
-            // Make sure to handle the upload on the server side as well
         },
 
+        saveFile(document_name){
+            const full_name = this.customername + '-' + document_name;
+            const url = 'http://192.168.6.79:2001/add-word-doc/' + full_name;
+            
+            const formData = new FormData();
+            formData.append('word_doc', this.file);
+            fetch(url, {
+            method: 'POST',
+            body: formData
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        },
 
 
 
