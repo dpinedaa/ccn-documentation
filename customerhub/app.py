@@ -45,7 +45,7 @@ def find_documentation(document_name):
     time.sleep(5)
 
     print("Finding documentation for " + document_name)
-    url = "http://192.168.6.79:3000/document/" + document_name
+    url = "http://192.168.6.79:1502/document/" + document_name
     print(url)
     #get documentation 
     response = requests.get(url)
@@ -417,7 +417,7 @@ def check_project(document_name):
 def delete_customer_project(customer_name, ID):
     #Find all the projects for the customer
     print("Deleting customer project for " + customer_name)
-    url = "http://192.168.6.79:3000/customer/" + ID
+    url = "http://192.168.6.79:1502/customer/" + ID
     print(url)
     #get documentation
     response = requests.get(url)
@@ -606,4 +606,4 @@ def modify_customer_name(customer_name):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host=host_ip, port=2001)
+    app.run(debug=True, host=host_ip, port=1501)

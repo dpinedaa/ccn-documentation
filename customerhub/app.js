@@ -32,7 +32,7 @@ const Document = mongoose.model('Document', documentSchema);
 const Customer = mongoose.model('Customer', customerSchema);
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 1502;
 
 app.use(bodyParser.json());
 
