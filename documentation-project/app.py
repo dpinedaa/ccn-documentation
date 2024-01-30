@@ -10,8 +10,9 @@ import re
 
 
 
+
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"*": {"origins": "*"}})
 
 username = os.getlogin()
 home_dir="/home"
