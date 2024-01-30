@@ -22,7 +22,7 @@ export default{
     },
     methods:{
         addCustomer(){
-            const url = 'http://192.168.6.79:1502/add-customer';
+            const url = 'http://10.7.1.100:1502/add-customer';
             // Upload customer name to database it's a post method so we need to pass the data
 
             axios.post(url, {name: this.customerName}).then((response) => {

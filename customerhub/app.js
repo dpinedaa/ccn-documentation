@@ -39,7 +39,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Connect to MongoDB
-mongoose.connect('mongodb://192.168.6.79:27017/customers', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://10.7.1.100:27017/customers', { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
