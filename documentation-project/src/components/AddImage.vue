@@ -52,7 +52,7 @@ export default {
             
             const formData = new FormData();
             formData.append('image', this.imageFile);
-            const url = `http://10.7.1.100:65000/save_image/${this.sectionNumber}`;
+            const url = `http://192.168.6.79:65000/save_image/${this.sectionNumber}`;
 
             axios.post(url, formData)
                 .then(response => {
@@ -72,7 +72,7 @@ export default {
             else{
                 this.style = "Caption";
 
-            const url = 'http://10.7.1.100:65000/save_text/' + this.sectionNumber;
+            const url = 'http://192.168.6.79:65000/save_text/' + this.sectionNumber;
 
             axios.post(url, { text: this.imageCaption, style: this.style })
                 .then(response => {

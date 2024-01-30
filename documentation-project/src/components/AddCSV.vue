@@ -128,7 +128,7 @@ export default {
       console.log(this.csvHeaders);
       console.log(this.csvData);
 
-      const url = `http://10.7.1.100:65000/save_csv/${this.sectionNumber}`;
+      const url = `http://192.168.6.79:65000/save_csv/${this.sectionNumber}`;
 
       axios
         .post(url, {
@@ -147,7 +147,7 @@ export default {
       if (!this.tableCaption == '') {
         this.style = 'Caption';
 
-        const url = 'http://10.7.1.100:65000/save_text/' + this.sectionNumber;
+        const url = 'http://192.168.6.79:65000/save_text/' + this.sectionNumber;
 
         axios
           .post(url, { text: this.tableCaption, style: this.style })
@@ -179,7 +179,7 @@ export default {
         formData.append('file', this.file);
 
         // Make a POST request to the server
-        const url = `http://10.7.1.100:65000/add_csv/${this.sectionNumber}`;
+        const url = `http://192.168.6.79:65000/add_csv/${this.sectionNumber}`;
 
         axios
         .post(url, formData)

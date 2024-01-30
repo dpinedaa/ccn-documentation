@@ -13,7 +13,7 @@ if [ -n "$pid" ]; then
 fi
 
 #Start vue project 
-cd ../documentation/Diana2-LLD3
+cd ../documentation/Telem-LLD
 sudo PORT=2002 npm run serve &
 
 #Start flask 

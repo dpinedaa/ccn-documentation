@@ -27,7 +27,7 @@
                                         
                                         <!-- <td v-if=!editDocumentCheck class="document-name">{{document.name}}</td>     -->
                                         <td v-if="!editDocumentCheck" class="document-name">
-                                            <a :href="'http://10.7.1.100:' + document.portVue">{{ document.name }}</a>
+                                            <a :href="'http://192.168.6.79:' + document.portVue">{{ document.name }}</a>
                                         </td>
 
 
@@ -115,7 +115,7 @@ export default{
     },
     methods:{
         getCustomers(){
-            const url = 'http://10.7.1.100:1502/customers';
+            const url = 'http://192.168.6.79:1502/customers';
 
             axios.get(url).then((response) => {
                 console.log(response);
@@ -129,7 +129,7 @@ export default{
         async deleteCustomer(customer) {
             await this.deteleCustomerProjects(customer);
 
-            const url = 'http://10.7.1.100:1502/customers/' + customer._id;
+            const url = 'http://192.168.6.79:1502/customers/' + customer._id;
 
             axios.delete(url)
                 .then((response) => {
@@ -144,7 +144,7 @@ export default{
         },
 
         async deteleCustomerProjects(customer) {
-            const url = 'http://10.7.1.100:1501/delete-customer-projects/' + customer.name + '/' + customer._id;
+            const url = 'http://192.168.6.79:1501/delete-customer-projects/' + customer.name + '/' + customer._id;
 
             try {
                 const response = await axios.post(url);
@@ -170,7 +170,7 @@ export default{
                 this.saveFile(this.documentName);
             }
             console.log(this.customerId);
-            const url = 'http://10.7.1.100:1502/add-document/' + this.customerId;
+            const url = 'http://192.168.6.79:1502/add-document/' + this.customerId;
             
             fetch(url, {
                 method: 'POST',
@@ -198,7 +198,7 @@ export default{
 
         async createDocumentComponents(documentname, customername) {
             const full_name = customername + '-' + documentname;
-            const url = 'http://10.7.1.100:1501/createdocumentation/' + full_name;
+            const url = 'http://192.168.6.79:1501/createdocumentation/' + full_name;
 
             await axios.post(url)
                 .then((response) => {
@@ -224,7 +224,7 @@ export default{
 
         async convertDocument(documentname, customername) {
             const full_name = customername + '-' + documentname;
-            const url = 'http://10.7.1.100:1501/convert/' + full_name;
+            const url = 'http://192.168.6.79:1501/convert/' + full_name;
 
             await axios.post(url)
                 .then((response) => {
@@ -250,7 +250,7 @@ export default{
         async deleteDocument(customer, document) {
             await this.deleteDocumentComponent(document.name, customer.name);
 
-            const url = 'http://10.7.1.100:1502/delete-document/' + customer._id + '/' + document._id;
+            const url = 'http://192.168.6.79:1502/delete-document/' + customer._id + '/' + document._id;
             
             try {
                 const response = await axios.delete(url);
@@ -271,7 +271,7 @@ export default{
 
         async deleteDocumentComponent(documentname, customername) {
             const full_name = customername + '-' + documentname;
-            const url = 'http://10.7.1.100:1501/deletedocumentation/' + full_name;
+            const url = 'http://192.168.6.79:1501/deletedocumentation/' + full_name;
 
             try {
                 const response = await axios.post(url);
@@ -298,7 +298,7 @@ export default{
         async saveCustomer(customer){
             await this.updateCustomerProjects(customer);
 
-            const url = 'http://10.7.1.100:1502/update-customer/' + customer._id;
+            const url = 'http://192.168.6.79:1502/update-customer/' + customer._id;
 
             axios.put(url, {
                 name: this.newCustomerName,
@@ -314,7 +314,7 @@ export default{
         },
 
         async updateCustomerProjects(customer){
-            const url = 'http://10.7.1.100:1501/modify-customer-name/' + customer.name;
+            const url = 'http://192.168.6.79:1501/modify-customer-name/' + customer.name;
 
             await axios.post(url, {
                 name: this.newCustomerName,
@@ -334,7 +334,7 @@ export default{
         async updateDocumentName(customer, document){
             await this.updateDocumentNameFiles(customer, document);
 
-            const url = 'http://10.7.1.100:1502/update-document/' + customer._id + '/' + document._id;
+            const url = 'http://192.168.6.79:1502/update-document/' + customer._id + '/' + document._id;
 
             axios.put(url, {
                 name: document.name,
@@ -349,7 +349,7 @@ export default{
         },
 
         async updateDocumentNameFiles(customer, document){
-            const url = 'http://10.7.1.100:1501/modify-document-name/' + document._id;
+            const url = 'http://192.168.6.79:1501/modify-document-name/' + document._id;
             console.log(url);
             try {
                 const response = await axios.post(url, {
@@ -368,7 +368,7 @@ export default{
 
         saveFile(document_name){
             const full_name = this.customername + '-' + document_name;
-            const url = 'http://10.7.1.100:1501/add-word-doc/' + full_name;
+            const url = 'http://192.168.6.79:1501/add-word-doc/' + full_name;
             
             const formData = new FormData();
             formData.append('word_doc', this.file);

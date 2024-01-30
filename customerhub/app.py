@@ -45,7 +45,7 @@ def find_documentation(document_name):
     time.sleep(5)
 
     print("Finding documentation for " + document_name)
-    url = "http://10.7.1.100:1502/document/" + document_name
+    url = "http://192.168.6.79:1502/document/" + document_name
     print(url)
     #get documentation 
     response = requests.get(url)
@@ -188,7 +188,7 @@ def create_apache_conf(full_name, portApache, username):
     file_path = '/etc/apache2/sites-available/' + full_name + '.conf'
     try:
         with open(file_path, 'w') as file:
-            text_block = f"<VirtualHost 10.7.1.100:{portApache}>\n"
+            text_block = f"<VirtualHost 192.168.6.79:{portApache}>\n"
             text_block += f"\tServerAdmin webmaster@localhost\n\n"
             #text_block += f"\tDocumentRoot /home/{username}/ccn-documentation/documentation/{full_name}/read-the-docs/build/html/>\n"
             text_block += f"\tDocumentRoot /home/{username}/Documents/GitHub/ccn-documentation/documentation/{full_name}/read-the-docs/build/html/\n\n"
@@ -417,7 +417,7 @@ def check_project(document_name):
 def delete_customer_project(customer_name, ID):
     #Find all the projects for the customer
     print("Deleting customer project for " + customer_name)
-    url = "http://10.7.1.100:1502/customer/" + ID
+    url = "http://192.168.6.79:1502/customer/" + ID
     print(url)
     #get documentation
     response = requests.get(url)

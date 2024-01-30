@@ -150,7 +150,7 @@
     },
     methods: {
       async getFiles() {
-        const url = `http://10.7.1.100:65000/files/${this.sectionNumber}`;
+        const url = `http://192.168.6.79:65000/files/${this.sectionNumber}`;
         try {
           const response = await fetch(url, {
             method: 'GET',
@@ -249,7 +249,7 @@
         },
   
         getFilePath(fileName) {
-          return `http://10.7.1.100:65000/files/${this.sectionNumber}/${fileName}`;
+          return `http://192.168.6.79:65000/files/${this.sectionNumber}/${fileName}`;
         },
   
         toggleEditMode(fileName) {
@@ -271,7 +271,7 @@
           }
         },
         deleteFile(fileName) {
-            const apiUrl = 'http://10.7.1.100:65000/delete_file/' + this.sectionNumber + '/' + fileName;
+            const apiUrl = 'http://192.168.6.79:65000/delete_file/' + this.sectionNumber + '/' + fileName;
   
             const scrollPosition = window.scrollY;
             console.log(scrollPosition);
@@ -306,7 +306,7 @@
   
   
         moveFileUp(fileName) {
-          const url = 'http://10.7.1.100:65000/move_up/' + this.sectionNumber + '/' + fileName;
+          const url = 'http://192.168.6.79:65000/move_up/' + this.sectionNumber + '/' + fileName;
           const scrollPosition = window.scrollY;
   
           fetch(url, {
@@ -338,7 +338,7 @@
         },
   
         moveFileDown(fileName) {
-          const url = 'http://10.7.1.100:65000/move_down/' + this.sectionNumber + '/' + fileName;
+          const url = 'http://192.168.6.79:65000/move_down/' + this.sectionNumber + '/' + fileName;
           const scrollPosition = window.scrollY;
   
           fetch(url, {
