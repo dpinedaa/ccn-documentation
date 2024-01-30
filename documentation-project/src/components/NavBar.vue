@@ -28,11 +28,11 @@ export default{
     },
     methods:{
         goToDocumentation() {
-            window.open("http://192.168.6.79:65555/", "_blank");
+            window.open("http://10.7.1.100:65555/", "_blank");
         },
         
         async updateSphinx() {
-            const url = 'http://192.168.6.79:65000/update'
+            const url = 'http://10.7.1.100:65000/update'
             const response = await fetch(url, {
                 method: 'POST',
             });
