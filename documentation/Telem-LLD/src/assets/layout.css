@@ -1,0 +1,7 @@
+.layout {
+    display: flex; /* Makes the content display in a row */
+    flex-direction: column; /* Makes the content display in a column */
+    justify-content: center; /* Centers the content horizontally */
+    align-items: center; /* Centers the content vertically */
+  }
+  

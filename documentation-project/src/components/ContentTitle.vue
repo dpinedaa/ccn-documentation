@@ -61,7 +61,7 @@ export default{
     saveTitle() {
       this.editTitleBoolean = false;
 
-      const url = 'http://10.7.1.100:65000/update_title/' + this.sectionNumber;
+      const url = 'http://192.168.6.79:65000/update_title/' + this.sectionNumber;
       const newContent = this.sectionTitle;
 
       fetch(url, {
@@ -90,7 +90,7 @@ export default{
     async getSectionTitle() {
       try{
         
-        const url = 'http://10.7.1.100:65000/get_title/'+this.sectionNumber;
+        const url = 'http://192.168.6.79:65000/get_title/'+this.sectionNumber;
 
       axios.get(url)
           .then(response => {

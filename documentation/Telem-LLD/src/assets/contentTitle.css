@@ -1,0 +1,108 @@
+.section-title {
+    margin-top: 0px;
+    width: 69.5%;
+    margin-left: 15%;
+    height: 230px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: none;
+    border: 5px double lightgrey;
+}
+
+.h1-container h1 {
+    /* background-color: aqua; */
+    padding-top: 15px;
+    /* border: 1px solid black; */
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+.section-title p {
+    margin: 0;
+    padding-top: 5px;
+    overflow: hidden;
+    white-space: normal;
+    height: auto;
+    font-size: 30px;
+    color: black;
+    font-weight: bold;
+    word-wrap: break-word;
+    hyphens: auto;
+    overflow-wrap: break-word;
+    margin-bottom: 5px;
+    /* background-color: aqua; */
+}
+
+.title-input {
+    border: none;
+    border-bottom: solid 1.5px #9e9e9e;
+    background: none;
+    padding-top: 10px;
+    font-size: 30px;
+    color: black;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 80%;
+    align-self: center;
+    font-weight: bold;
+}
+
+.content {
+    max-width: 70%;
+    width: 70%;
+    font-family: Arial, Helvetica, sans-serif;
+    justify-content: center;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.actual-section-title {
+    font-size: 30px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* background-color: aqua; */
+    
+}
+
+.section-title-btn {
+    align-items: center;
+    justify-content: center;
+    font-family: Roboto, sans-serif;
+    font-size: 14px;
+    color: #fff;
+    background-color: black;
+    padding: 5px 20px;
+    border: solid black 2px;
+    box-shadow: rgb(0, 0, 0) 0px 0px 0px 0px;
+    border-radius: 50px;
+    transition: 758ms;
+    transform: translateY(0);
+    align-items: center;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.section-title-btn:hover {
+    transition: 758ms;
+    padding: 5px 10px;
+    transform: translateY(-0px);
+    background-color: #fff;
+    color: black;
+    border: solid 2px;
+}
+
+
+
+.section-title-buttons {
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: 30px;
+    display: inline-block;
+    flex-direction: row;
+}
